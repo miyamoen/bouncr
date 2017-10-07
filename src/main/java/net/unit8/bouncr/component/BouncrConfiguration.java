@@ -41,7 +41,8 @@ public class BouncrConfiguration extends SystemComponent {
                 certConfiguration = new CertConfiguration();
                 if (secureRandom == null) {
                     try {
-                        secureRandom = SecureRandom.getInstance("NativePRNGNonBlocking");
+                        // secureRandom = SecureRandom.getInstance("NativePRNGNonBlocking");
+                        secureRandom = SecureRandom.getInstanceStrong();
                     } catch (NoSuchAlgorithmException e) {
                         throw new UnreachableException();
                     }

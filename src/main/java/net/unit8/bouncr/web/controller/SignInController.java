@@ -102,24 +102,24 @@ public class SignInController {
             String oidcSessionId = UUID.randomUUID().toString();
             OidcSession oidcSession = OidcSession.create(config.getSecureRandom());
 
-            List<OAuth2ProviderDto> oauth2Providers = oauth2ProviderDao
-                    .selectAll()
-                    .stream()
-                    .map(p -> {
-                        OAuth2ProviderDto dto = beansConverter.createFrom(p, OAuth2ProviderDto.class);
-                        dto.setNonce(oidcSession.getNonce());
-                        dto.setState(oidcSession.getState());
-                        dto.setRedirectUriBase(request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort());
-                        return dto;
-                    })
-                    .collect(Collectors.toList());
+            // List<OAuth2ProviderDto> oauth2Providers = oauth2ProviderDao
+            //         .selectAll()
+            //         .stream()
+            //         .map(p -> {
+            //             OAuth2ProviderDto dto = beansConverter.createFrom(p, OAuth2ProviderDto.class);
+            //             dto.setNonce(oidcSession.getNonce());
+            //             dto.setState(oidcSession.getState());
+            //             dto.setRedirectUriBase(request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort());
+            //             return dto;
+            //         })
+            //         .collect(Collectors.toList());
 
             storeProvider.getStore(OIDC_SESSION).write(oidcSessionId, oidcSession);
             Cookie cookie = builder(Cookie.create("OIDC_SESSION_ID", oidcSessionId))
                     .set(Cookie::setPath, "/")
                     .build();
             return builder(templateEngine.render("my/signIn/index",
-                    "oauth2Providers", oauth2Providers,
+                    "oauth2Providers", new ArrayList<OAuth2ProviderDto>(),
                     "signin", form))
                     .set(HttpResponse::setCookies, Multimap.of("OIDC_SESSION_ID", cookie))
                     .build();
